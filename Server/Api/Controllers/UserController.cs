@@ -30,11 +30,11 @@ public class UserController : ControllerBase
     [HttpPost("/user/register")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> Register(UserRequest userRequest)
+    public async Task<IActionResult> Register(UserRegisterRequest userRegisterRequest)
     {
         List<UserError> errors = [];
 
-        var results = await _userRegisterValidator.ValidateAsync(userRequest);
+        var results = await _userRegisterValidator.ValidateAsync(userRegisterRequest);
 
         if (!results.IsValid)
         {
@@ -42,13 +42,10 @@ public class UserController : ControllerBase
             {
                 errors.Add(new UserError(error.ErrorCode, error.ErrorMessage));
             }
-
-            foreach (var i in errors) System.Console.WriteLine(i);
-
             return BadRequest(errors);
         }
 
-        var userResponse = await _userRepository.CreateUser(userRequest);
+        var userResponse = await _userRepository.CreateUser(userRegisterRequest);
 
         return Ok(userResponse);
     }
@@ -56,9 +53,9 @@ public class UserController : ControllerBase
     [HttpPost("/user/login")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> Login(UserRequest userRequest)
+    public async Task<IActionResult> Login(UserLoginRequest userLoginRequest)
     {
-        var results = _userLoginValidator.Validate(userRequest);
+        var results = await _userLoginValidator.ValidateAsync(userLoginRequest);
 
         List<UserError> errors = [];
 
@@ -71,7 +68,7 @@ public class UserController : ControllerBase
             return BadRequest(errors);
         }
 
-        var userResponse = await _userRepository.LoginUser(userRequest.Name);
+        var userResponse = await _userRepository.LoginUser(userLoginRequest.Name);
 
         return Ok(userResponse);
     }

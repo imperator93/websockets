@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace Api.Services;
 
-public class UserRegisterValidator : AbstractValidator<UserRequest>
+public class UserRegisterValidator : AbstractValidator<UserRegisterRequest>
 {
     public UserRegisterValidator(IUserRepository userRepository)
     {
@@ -18,7 +18,7 @@ public class UserRegisterValidator : AbstractValidator<UserRequest>
     }
 }
 
-public class UserLoginValidator : AbstractValidator<UserRequest>
+public class UserLoginValidator : AbstractValidator<UserLoginRequest>
 {
     public UserLoginValidator(IUserRepository userRepository, EncryptionService encryptionService)
     {

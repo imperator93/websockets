@@ -43,7 +43,7 @@ public class UserRepository : IUserRepository
         return await _dataContext.Users.FirstOrDefaultAsync(u => u.Name == name);
     }
 
-    public async Task<User> AddUserToDb(UserRequest userRequest)
+    public async Task<User> AddUserToDb(UserRegisterRequest userRequest)
     {
         var user = _mapper.Map<User>(userRequest);
 
@@ -54,7 +54,7 @@ public class UserRepository : IUserRepository
 
         return user;
     }
-    public async Task<UserResponse> CreateUser(UserRequest userRequest)
+    public async Task<UserResponse> CreateUser(UserRegisterRequest userRequest)
     {
         var user = await AddUserToDb(userRequest);
 
