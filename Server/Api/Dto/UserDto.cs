@@ -1,6 +1,6 @@
 namespace Api.Dto;
 
-public record UserRegisterRequest(
+public record UserRequest(
     string Name,
     string Password,
     bool IsOnline,
@@ -12,9 +12,4 @@ public record UserResponse(
     string Name,
     string Avatar,
     bool IsOnline
-);
-
-public record UserLoginRequest(
-    string Name,
-    string Password
 );

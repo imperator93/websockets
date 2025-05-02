@@ -1,10 +1,10 @@
+using System.Security;
 using Api.Data;
 using Api.Dto;
 using Api.Models;
 using Api.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Api.Repository;
 
@@ -49,7 +49,7 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<User> AddUserToDb(UserRegisterRequest userRequest)
+    public async Task<User> AddUserToDb(UserRequest userRequest)
     {
         var user = _mapper.Map<User>(userRequest);
 
@@ -60,7 +60,22 @@ public class UserRepository : IUserRepository
 
         return user;
     }
-    public async Task<UserResponse> CreateUser(UserRegisterRequest userRequest)
+
+    public async Task<bool> ChangeUserAndSaveToDb(UserRequest userRequest)
+    {
+        var updatedUser = _mapper.Map<User>(userRequest);
+
+        var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Name == userRequest.Name);
+
+        if (user is null) return false;
+
+        user = updatedUser;
+
+        await _dataContext.SaveChangesAsync();
+
+        return true;
+    }
+    public async Task<UserResponse> CreateUser(UserRequest userRequest)
     {
         var user = await AddUserToDb(userRequest);
 

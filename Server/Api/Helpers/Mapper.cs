@@ -9,7 +9,6 @@ public class Mapper : Profile
     public Mapper()
     {
         CreateMap<User, UserResponse>();
-        CreateMap<UserRegisterRequest, User>();
-        CreateMap<UserLoginRequest, User>();
+        CreateMap<UserRequest, User>();
     }
 }

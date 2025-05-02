@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace Api.Services;
 
-public class UserRegisterValidator : AbstractValidator<UserRegisterRequest>
+public class UserRegisterValidator : AbstractValidator<UserRequest>
 {
     public UserRegisterValidator()
     {
@@ -23,7 +23,7 @@ public class UserRegisterValidator : AbstractValidator<UserRegisterRequest>
     }
 }
 
-public class UserLoginValidator : AbstractValidator<UserLoginRequest>
+public class UserLoginValidator : AbstractValidator<UserRequest>
 {
     public UserLoginValidator()
     {
