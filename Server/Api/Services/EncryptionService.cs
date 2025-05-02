@@ -21,7 +21,8 @@ public class EncryptionService
 
         using var Encryptor = aes.CreateEncryptor();
 
-        using var mEncrypt = new MemoryStream(aes.IV, 0, aes.IV.Length);
+        using var mEncrypt = new MemoryStream();
+        mEncrypt.Write(aes.IV, 0, aes.IV.Length);
         using var cEncrypt = new CryptoStream(mEncrypt, Encryptor, CryptoStreamMode.Write);
 
         cEncrypt.Write(bytes, 0, bytes.Length);
@@ -32,7 +33,7 @@ public class EncryptionService
 
     public string Decrypt(string password)
     {
-        byte[] bytes = Encoding.UTF8.GetBytes(password);
+        byte[] bytes = Convert.FromBase64String(password);
 
         using var aes = Aes.Create();
         aes.Key = _key;

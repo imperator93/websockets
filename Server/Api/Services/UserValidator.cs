@@ -1,39 +1,47 @@
-using Api.Data;
 using Api.Dto;
-using Api.Repository;
+using Api.Models;
 using FluentValidation;
 
 namespace Api.Services;
 
 public class UserRegisterValidator : AbstractValidator<UserRegisterRequest>
 {
-    public UserRegisterValidator(IUserRepository userRepository)
+    public UserRegisterValidator()
     {
-        RuleFor(u => u.Name).Cascade(CascadeMode.Stop).MustAsync(async (name, _) =>
+        RuleFor(x => x).Custom((request, context) =>
         {
-            return await userRepository.UserExists(name);
-        }).WithErrorCode("UsernameTaken").WithMessage("User exists! Pick another name!").NotEmpty().WithErrorCode("UsernameEmpty").WithMessage("{PropertyName} must not be empty").Length(3, 15).WithErrorCode("InvalidLength").WithMessage("{PropertyName} must be at least 3 and at most 15 characters long");
+            var user = context.RootContextData["User"] as User;
 
-        RuleFor(u => u.Password).Cascade(CascadeMode.Stop).NotEmpty().WithMessage("{PropertyName} must not be empty").Length(3, 15).WithMessage("{PropertyName} must be at least 3 and at most 15 characters long");
+            if (user is not null)
+            {
+                context.AddFailure("User", "User already exists");
+                return;
+            }
+        });
+
+        RuleFor(x => x.Password).Cascade(CascadeMode.Stop).Matches("^[a-zA-Z0-9]+$").WithMessage("Password must not contain special characters like \' or \"");
     }
 }
 
 public class UserLoginValidator : AbstractValidator<UserLoginRequest>
 {
-    public UserLoginValidator(IUserRepository userRepository, EncryptionService encryptionService)
+    public UserLoginValidator()
     {
-        RuleFor(u => u.Name).MustAsync(async (name, _) =>
-        {
-            var user = await userRepository.GetUserByName(name);
-            return user is not null;
+        RuleFor(x => x).Custom((request, context) =>
+               {
+                   var user = context.RootContextData["User"] as User;
 
-        }).WithErrorCode("UserIsNull").WithMessage("User doesn't exit");
+                   if (user is null)
+                   {
+                       context.AddFailure("User", "User doesn't exist!");
+                       return;
+                   }
 
-        RuleFor(u => u.Password).MustAsync(async (u, password, _) =>
-        {
-            var user = await userRepository.GetUserByName(u.Name);
-            return encryptionService.Decrypt(user!.Password) == password;
-
-        }).WithMessage("Incorrect Password");
+                   if (request.Password != user.Password)
+                   {
+                       context.AddFailure("Password", "Incorrect password!");
+                       return;
+                   }
+               });
     }
 }

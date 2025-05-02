@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using Api.Dto;
 using Api.Repository;
 using Api.Services;
+using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace Api.Controllers;
 
@@ -12,12 +16,14 @@ public class UserController : ControllerBase
     private readonly IUserRepository _userRepository;
     private readonly UserRegisterValidator _userRegisterValidator;
     private readonly UserLoginValidator _userLoginValidator;
+    public readonly IMapper _mapper;
 
-    public UserController(IUserRepository userRepository, UserRegisterValidator userRegisterValidator, UserLoginValidator userLoginValidator)
+    public UserController(IUserRepository userRepository, UserRegisterValidator userRegisterValidator, UserLoginValidator userLoginValidator, IMapper mapper)
     {
         _userRepository = userRepository;
         _userRegisterValidator = userRegisterValidator;
         _userLoginValidator = userLoginValidator;
+        _mapper = mapper;
     }
 
     [HttpGet("/users")]
@@ -34,7 +40,12 @@ public class UserController : ControllerBase
     {
         List<UserError> errors = [];
 
-        var results = await _userRegisterValidator.ValidateAsync(userRegisterRequest);
+        var user = await _userRepository.GetUserByName(userRegisterRequest.Name);
+
+        var context = new ValidationContext<UserRegisterRequest>(userRegisterRequest);
+        context.RootContextData["User"] = user;
+
+        var results = _userRegisterValidator.Validate(context);
 
         if (!results.IsValid)
         {
@@ -55,9 +66,13 @@ public class UserController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> Login(UserLoginRequest userLoginRequest)
     {
-        var results = await _userLoginValidator.ValidateAsync(userLoginRequest);
-
         List<UserError> errors = [];
+
+        var user = await _userRepository.GetUserByName(userLoginRequest.Name);
+        var context = new ValidationContext<UserLoginRequest>(userLoginRequest);
+        context.RootContextData["User"] = user;
+
+        var results = _userLoginValidator.Validate(context);
 
         if (!results.IsValid)
         {
@@ -68,7 +83,7 @@ public class UserController : ControllerBase
             return BadRequest(errors);
         }
 
-        var userResponse = await _userRepository.LoginUser(userLoginRequest.Name);
+        var userResponse = _mapper.Map<UserResponse>(user);
 
         return Ok(userResponse);
     }

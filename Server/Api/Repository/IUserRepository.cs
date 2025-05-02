@@ -11,6 +11,4 @@ public interface IUserRepository
     Task<User> AddUserToDb(UserRegisterRequest userRequest);
     Task<User?> GetUserByName(string name);
     Task<UserResponse> CreateUser(UserRegisterRequest userRequest);
-    Task<UserResponse> LoginUser(string name);
-
 }

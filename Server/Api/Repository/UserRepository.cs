@@ -40,7 +40,13 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserByName(string name)
     {
-        return await _dataContext.Users.FirstOrDefaultAsync(u => u.Name == name);
+        var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Name == name);
+        if (user is not null)
+        {
+            user.Password = _encryptionService.Decrypt(user.Password);
+            return user;
+        }
+        return user;
     }
 
     public async Task<User> AddUserToDb(UserRegisterRequest userRequest)
@@ -61,9 +67,5 @@ public class UserRepository : IUserRepository
         return _mapper.Map<UserResponse>(user);
     }
 
-    public async Task<UserResponse> LoginUser(string name)
-    {
-        return _mapper.Map<UserResponse>(await GetUserByName(name));
-    }
 }
 
