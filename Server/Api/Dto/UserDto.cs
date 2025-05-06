@@ -3,8 +3,8 @@ namespace Api.Dto;
 public record UserRequest(
     string Name,
     string Password,
-    bool IsOnline,
-    string Avatar
+    bool? IsOnline,
+    string? Avatar
 );
 
 public record UserResponse(

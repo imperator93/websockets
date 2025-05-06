@@ -4,6 +4,8 @@ using FluentValidation;
 using Api.Data;
 using Api.Repository;
 using Api.Services;
+using Microsoft.Identity.Client;
+using Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -23,7 +25,11 @@ var builder = WebApplication.CreateBuilder(args);
             policy.AllowAnyOrigin();
         });
     });
+    builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+    builder.Services.AddSingleton<TokenProvider>();
     builder.Services.AddTransient<EncryptionService>();
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
