@@ -9,6 +9,6 @@ public class Mapper : Profile
     public Mapper()
     {
         CreateMap<User, UserResponse>();
-        CreateMap<UserRequest, User>();
+        CreateMap<UserRequest, User>().ForMember(m => m.Id, o => o.Ignore());
     }
 }

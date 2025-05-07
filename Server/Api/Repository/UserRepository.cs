@@ -63,13 +63,11 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> ChangeUserAndSaveToDb(UserRequest userRequest)
     {
-        var updatedUser = _mapper.Map<User>(userRequest);
-
         var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Name == userRequest.Name);
 
         if (user is null) return false;
 
-        user = updatedUser;
+        _mapper.Map(userRequest, user);
 
         await _dataContext.SaveChangesAsync();
 

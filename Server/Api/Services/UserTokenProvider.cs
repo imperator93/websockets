@@ -1,31 +1,31 @@
 using System.Security.Claims;
 using System.Text;
+using Api.Dto;
 using Api.Models;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Services;
 
-public class TokenProvider
+public class UserTokenProvider(IConfiguration configuration)
 {
-    public string Create(User user, JwtSettings jwtSettings)
+    public string Create(UserResponse userResponse)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!));
 
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
+                new Claim(JwtRegisteredClaimNames.Name, userResponse.Name)
             ]),
-            Issuer = jwtSettings.Issuer,
-            Audience = jwtSettings.Audience,
-            Expires = DateTime.UtcNow.AddHours(jwtSettings.ExpirationTime),
+            Issuer = configuration["JwtSettings:Issuer"]!,
+            Audience = configuration["JwtSettings:Audience"]!,
+            SigningCredentials = credentials,
+            Expires = DateTime.UtcNow.AddHours(configuration.GetValue<int>("JwtSettings:ExpirationTime"))
         };
 
-        var handler = new JsonWebTokenHandler();
-
-        return handler.CreateToken(tokenDescriptor);
+        return new JsonWebTokenHandler().CreateToken(tokenDescriptor);
     }
 }

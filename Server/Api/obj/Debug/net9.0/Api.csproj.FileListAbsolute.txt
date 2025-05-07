@@ -168,3 +168,4 @@ C:\Users\stoja\PROJECTS\websockets\server\api\obj\Debug\net9.0\Api.pdb
 C:\Users\stoja\PROJECTS\websockets\server\api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\stoja\PROJECTS\websockets\server\api\obj\Debug\net9.0\ref\Api.dll
 C:\Users\stoja\PROJECTS\Websockets\server\api\obj\Debug\net9.0\Api.sourcelink.json
+C:\Users\stoja\PROJECTS\Websockets\server\api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
