@@ -1,5 +1,4 @@
 using Api.Dto;
-using Api.Models;
 using Api.Repository;
 using Api.Services;
 using AutoMapper;
@@ -29,6 +28,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("/users")]
+    [Authorize]
     [ProducesResponseType(200)]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -59,8 +59,9 @@ public class UserController : ControllerBase
         }
 
         var userResponse = await _userRepository.CreateUser(userRegisterRequest);
+        var serverResponse = new ServerResponseDto(_userTokenProvider.Create(userResponse), userResponse);
 
-        return Ok(userResponse);
+        return Ok(serverResponse);
     }
 
     [HttpPost("/user/login")]
@@ -68,27 +69,26 @@ public class UserController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> Login(UserRequest userLoginRequest)
     {
-        // List<UserError> errors = [];
+        List<UserError> errors = [];
 
-        // var user = await _userRepository.GetUserByName(userLoginRequest.Name);
-        // var context = new ValidationContext<UserRequest>(userLoginRequest);
-        // context.RootContextData["User"] = user;
+        var user = await _userRepository.GetUserByName(userLoginRequest.Name);
+        var context = new ValidationContext<UserRequest>(userLoginRequest);
+        context.RootContextData["User"] = user;
 
-        // var results = _userLoginValidator.Validate(context);
+        var results = _userLoginValidator.Validate(context);
 
-        // if (!results.IsValid)
-        // {
-        //     foreach (var error in results.Errors)
-        //     {
-        //         errors.Add(new UserError(error.ErrorCode, error.ErrorMessage));
-        //     }
-        //     return BadRequest(errors);
-        // }
+        if (!results.IsValid)
+        {
+            foreach (var error in results.Errors)
+            {
+                errors.Add(new UserError(error.ErrorCode, error.ErrorMessage));
+            }
+            return BadRequest(errors);
+        }
 
-        // var userResponse = _mapper.Map<UserResponse>(user);
-
-        // return Ok(userResponse);
-        return Ok(_userTokenProvider.Create(new UserResponse(Guid.NewGuid(), "petar", "avatar", true)));
+        var userResponse = _mapper.Map<UserResponse>(user);
+        var serverResponse = new ServerResponseDto(_userTokenProvider.Create(userResponse), userResponse);
+        return Ok(serverResponse);
     }
 
     [HttpPut("/user")]

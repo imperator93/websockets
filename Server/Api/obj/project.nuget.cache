@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ABt1kzDVLxw=",
+  "dgSpecHash": "IPEtl9f+1z8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\stoja\\PROJECTS\\Websockets\\server\\api\\Api.csproj",
+  "projectFilePath": "C:\\Users\\stoja\\PROJECTS\\Websockets\\Server\\api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\stoja\\.nuget\\packages\\automapper\\14.0.0\\automapper.14.0.0.nupkg.sha512",
     "C:\\Users\\stoja\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",

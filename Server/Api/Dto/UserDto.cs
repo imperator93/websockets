@@ -11,5 +11,6 @@ public record UserResponse(
     Guid Id,
     string Name,
     string Avatar,
-    bool IsOnline
+    bool IsOnline,
+    string? Jwt
 );
