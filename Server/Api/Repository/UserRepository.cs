@@ -41,11 +41,15 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetUserByName(string name)
     {
         var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Name == name);
+
         if (user is not null)
         {
+            user.IsOnline = true;
+            await _dataContext.SaveChangesAsync();
             user.Password = _encryptionService.Decrypt(user.Password);
             return user;
         }
+
         return user;
     }
 
@@ -61,17 +65,17 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<bool> ChangeUserAndSaveToDb(UserRequest userRequest)
+    public async Task<UserResponse?> ChangeUserAndSaveToDb(UserRequest userRequest)
     {
         var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Name == userRequest.Name);
 
-        if (user is null) return false;
+        if (user is null) return null;
 
-        _mapper.Map(userRequest, user);
+        user.IsOnline = (bool)userRequest.IsOnline!;
 
         await _dataContext.SaveChangesAsync();
 
-        return true;
+        return _mapper.Map<UserResponse>(user);
     }
     public async Task<UserResponse> CreateUser(UserRequest userRequest)
     {

@@ -10,5 +10,5 @@ public interface IUserRepository
     Task<User> AddUserToDb(UserRequest userRequest);
     Task<User?> GetUserByName(string name);
     Task<UserResponse> CreateUser(UserRequest userRequest);
-    Task<bool> ChangeUserAndSaveToDb(UserRequest userRequest);
+    Task<UserResponse?> ChangeUserAndSaveToDb(UserRequest userRequest);
 }

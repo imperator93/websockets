@@ -91,15 +91,14 @@ public class UserController : ControllerBase
         return Ok(serverResponse);
     }
 
-    [HttpPut("/user")]
+    [HttpPut("/user/change")]
     [Authorize]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> PutUser(UserRequest userRequest)
     {
-        bool success = await _userRepository.ChangeUserAndSaveToDb(userRequest);
-
-        return success ? Ok(new { success = "User updated!" }) : BadRequest(new UserError(ErrorCode: "NotFound",
+        var userResponse = await _userRepository.ChangeUserAndSaveToDb(userRequest);
+        return userResponse != null ? Ok(userResponse) : BadRequest(new UserError(ErrorCode: "NotFound",
         ErrorMessage: "User not found"));
     }
 

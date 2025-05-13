@@ -33,7 +33,7 @@ public class EncryptionService
 
     public string Decrypt(string password)
     {
-        byte[] bytes = Convert.FromBase64String(password);
+        byte[] bytes = Encoding.UTF8.GetBytes(password);
 
         using var aes = Aes.Create();
         aes.Key = _key;
